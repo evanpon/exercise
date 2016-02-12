@@ -1,0 +1,273 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <style>
+    body {
+      background-color: #fcfcfa;
+    }
+    div#exercise {
+      text-align: center;
+      height: 300px;
+      width: 600px;
+      margin: 50px auto 20px auto;
+      position: relative;
+    }
+    div#starter {
+      display: block;
+      
+    }
+    div#starter img {
+      height: 300px;
+    }
+    div.exercise {
+      font-size: 2em;
+      text-align: center;
+      display: none;
+    }
+    div#time {
+      font-size: 5em;
+      text-align: center;
+      padding: 50px;
+    }
+    div#rest {
+      color: #74a4a6;
+      height: 100%;
+      padding-top: 100px;
+      font-size: 64px;
+    }
+    div#preview {
+      padding-top: 20px;
+      font-size: 36px;
+    }
+    img.thumbnail {
+      display: inline;
+      height: 150px;
+    }
+    div.label {
+      display: none;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+    .center {
+      text-align: center;
+      margin: auto;
+    }
+    #button {
+      font-size: 50px;
+      width: 300px;
+      height: 100px;
+    }
+    </style>
+    <script type="text/javascript">
+    var restPeriod = 10;
+    var exercisePeriod = 30;
+    var exercises = ["plank", "pushups", "wall_sit", "squats", "lunge", "crunches", "chair_ups", "dips", "rotation_pushups", "high_knees", "side_plank"]
+    // var exercises = ["plank", "pushups", "lunge"]
+
+    var currentExercise = -1;
+    var seconds;
+    var resting = false;
+    var timeoutID = -1;
+    var tick = new Audio('tick.wav');
+    var ding = new Audio('ding.mp3');
+    
+    function randomize(array) {
+      for(var j, x, i = array.length; i; j = parseInt(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
+      return array;
+    }
+  
+    function start() {
+      exercises = randomize(exercises);
+      exercises.unshift("jumping_jacks");
+      currentExercise = 0;
+      resting = true;
+      $("#button").text("Pause");
+      beginExercise();
+    }
+    function pause() {
+      if (currentExercise >= 0) {
+        $("#button").text("Continue");
+        window.clearTimeout(timeoutID);
+        timeoutID = -1;
+      }
+    }
+    
+    function unpause() {
+      if (currentExercise >= 0 && timeoutID < 0) {
+        $("#button").text("Pause");
+        console.log("unpausing...");
+        countdown();
+      }
+    }
+    
+    $(document).ready(function() {
+
+      $(document).keypress(function(event) {
+          // Allow any key to work.
+          togglePlayback();
+      })
+      $("#button").click(function() {
+        // Remove focus in case the user presses spacebar next.
+        $(this).blur();
+        togglePlayback();
+      })
+    })
+    
+    function togglePlayback() {
+      if (currentExercise < 0) { 
+        start();
+      } else if (timeoutID < 0) {
+        console.debug("unpause");
+        window.setTimeout(evan, 2000);
+        unpause();
+      } else {
+        pause();
+      }      
+    }
+    
+    function evan() {
+      console.debug("evan!");
+    }
+    function beginExercise() {
+      $('.exercise').hide();
+      var exerciseName = exercises[currentExercise];
+      currentExercise = currentExercise + 1;
+      $("#" + exerciseName).show();
+      seconds = exercisePeriod;
+      resting = false;
+      writeTime(seconds);
+      countdown();
+    }
+    
+    function beginRest() {
+      console.debug("begin rest");
+      var element = "<img class=\"thumbnail\" src=\"" + exercises[currentExercise - 1] + ".jpg\"  />"
+      console.debug(element);
+      $("#finished").append(element);
+      
+      var nextExercise = exercises[currentExercise];
+      var nextExercisePretty = $("#" + nextExercise + " .label").html();
+      $('#preview').html("(" + nextExercisePretty + ")")
+      $('.exercise').hide();
+      $('#rest').show();
+      seconds = restPeriod;
+      resting = true;
+      writeTime(seconds);
+      countdown();
+    }
+    
+    function countdown() {
+      if (seconds > 0) {        
+        if (!resting) {
+          tick.play();          
+        }
+        console.log("seconds: " + seconds);
+        writeTime(seconds);
+        seconds = seconds - 1;
+        timeoutID = window.setTimeout(countdown, 1000);
+        console.log("timoutid: " + timeoutID);
+      }
+      else {
+        ding.play();
+        writeTime(seconds);
+        if (resting) {
+          beginExercise();          
+        } else if (currentExercise < exercises.length) {
+          beginRest();          
+        } else {
+          finish();
+        }    
+      }
+    }
+    function finish() {
+      currentExercise = -1;
+      $(".exercise").hide();
+      $("#button").text("Start");
+      $("#starter").show();
+      $("#finished").html("&nbsp;")
+      console.debug("done");
+    }
+    function writeTime(seconds) {
+      // var minutes = Math.floor(seconds / 60);
+      // var seconds = seconds % 60;
+      if (seconds < 10) {
+        seconds = "0" + seconds;
+      }
+      $('#time').html(seconds);
+      // $('#time').html(minutes + ":" + seconds);
+    }
+    </script>
+  </head>
+  
+  <body>
+    <div id="exercise">
+      <div id="starter" class="exercise">
+        <img src="7min.jpg">
+      </div>
+      <div id="plank" class="exercise">
+        <img src="plank.jpg" />
+        <div class="label">Plank</div>
+      </div>
+      <div id="pushups" class="exercise">
+        <img src="pushups.jpg" />
+        <div class="label">Push-ups</div>
+      </div>
+      <div id="jumping_jacks" class="exercise">
+        <img src="jumping_jacks.jpg" />
+        <div class="label">Jumping jacks</div>
+      </div>
+      <div id="wall_sit" class="exercise">
+        <img src="wall_sit.jpg" />
+        <div class="label">Wall sit</div>
+      </div>
+      <div id="squats" class="exercise">
+        <img src="squats.jpg" />
+        <div class="label">Squats</div>
+      </div>
+      <div id="lunge" class="exercise">
+        <img src="lunge.jpg" />
+        <div class="label">Lunges</div>
+      </div>
+      <div id="crunches" class="exercise">
+        <img src="crunches.jpg" />
+        <div class="label">Crunches</div>
+      </div>
+      <div id="chair_ups" class="exercise">
+        <img src="chair_ups.jpg" />
+        <div class="label">Step up onto chair</div>
+      </div>
+      <div id="dips" class="exercise">
+        <img src="dips.jpg" />
+        <div class="label">Triceps dip</div>
+      </div>
+      <div id="rotation_pushups" class="exercise">
+        <img src="rotation_pushups.jpg" />
+        <div class="label">Push-up with rotation</div>
+      </div>
+      <div id="high_knees" class="exercise">
+        <img src="high_knees.jpg" />
+        <div class="label">High knees</div>
+      </div>
+      <div id="side_plank" class="exercise">
+        <img src="side_plank.jpg" />
+        <div class="label">Side plank</div>
+      </div>
+      <div id="rest" class="exercise">
+        Rest
+        <div id="preview">
+        </div>
+      </div>
+    </div>
+    <div id="time">
+      30
+    </div>
+    
+    <div class="center">
+      <button id="button">Start</button>
+    </div>
+    <div id="finished">
+      <!-- <img class="thumbnail" src="plank.jpg" height="150px"/> -->
+    </div>
+  </body>
+</html>
