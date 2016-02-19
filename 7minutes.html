@@ -63,7 +63,6 @@
     var restPeriod = 10;
     var exercisePeriod = 30;
     var exercises = ["plank", "pushups", "wall_sit", "squats", "lunge", "crunches", "chair_ups", "dips", "rotation_pushups", "high_knees", "side_plank"]
-    // var exercises = ["plank", "pushups", "lunge"]
 
     var currentExercise = -1;
     var seconds;
@@ -84,6 +83,11 @@
       resting = true;
       $("#button").text("Pause");
       beginExercise();
+      speak("Start with jumping jacks");      
+    }
+    
+    function testing() {
+      speak("test");
     }
     function pause() {
       if (currentExercise >= 0) {
@@ -124,10 +128,14 @@
         pause();
       }      
     }
-
+    
     function speak(phrase) {
       var msg = new SpeechSynthesisUtterance(phrase);
       window.speechSynthesis.speak(msg);
+    }
+    
+    function speakWithDelay(phrase, delay) {
+      window.setTimeout(function() {speak(phrase);}, delay);
     }
     
     function beginExercise() {
@@ -138,8 +146,6 @@
       seconds = exercisePeriod;
       resting = false;
       writeTime(seconds);
-      var phrase = $("#" + exerciseName + " div.label").html();
-      speak(phrase);
       countdown();
     }
     
@@ -157,6 +163,7 @@
       seconds = restPeriod;
       resting = true;
       writeTime(seconds);
+      speakWithDelay("next: " + nextExercisePretty, 1000);
       countdown();
     }
     
