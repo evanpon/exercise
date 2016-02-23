@@ -60,8 +60,8 @@
     }
     </style>
     <script type="text/javascript">
-    var restPeriod = 6;
-    var exercisePeriod = 3;
+    var restPeriod = 10;
+    var exercisePeriod = 30;
     var exercises = ["plank", "pushups", "wall_sit", "squats", "lunge", "crunches", "chair_ups", "dips", "rotation_pushups", "high_knees", "side_plank"]
 
     var currentExercise = -1;
@@ -97,7 +97,6 @@
     function unpause() {
       if (currentExercise >= 0 && timeoutID < 0) {
         $("#button").text("Pause");
-        console.log("unpausing...");
         countdown();
       }
     }
@@ -119,7 +118,6 @@
       if (currentExercise < 0) { 
         start();
       } else if (timeoutID < 0) {
-        console.debug("unpause");
         unpause();
       } else {
         pause();
@@ -138,7 +136,6 @@
     function beginExercise() {
       $('.exercise').hide();
       var exerciseName = exercises[currentExercise];
-      currentExercise = currentExercise + 1;
       $("#" + exerciseName).show();
       seconds = exercisePeriod;
       resting = false;
@@ -147,11 +144,8 @@
     }
     
     function beginRest() {
-      console.debug("begin rest");
       var element = "<img class=\"thumbnail\" src=\"" + exercises[currentExercise - 1] + ".jpg\"  />"
-      console.debug(element);
       $("#finished").append(element);
-      
       var nextExercise = exercises[currentExercise];
       var nextExercisePretty = $("#" + nextExercise + " .label").html();
       $('#preview').html("(" + nextExercisePretty + ")")
@@ -167,7 +161,11 @@
     function countdown() {
       if (seconds > 0) {        
         if (!resting) {
-          tick.play();          
+          if (exercises[currentExercise] == 'side_plank' && seconds == (exercisePeriod / 2)) {
+            speak("Switch sides");
+          } else {
+            tick.play();                      
+          }
         } else {
           switch(seconds) {
           case 3:
@@ -183,21 +181,22 @@
             // do nothing
           } 
         }
-        console.log("seconds: " + seconds);
         writeTime(seconds);
         seconds = seconds - 1;
         timeoutID = window.setTimeout(countdown, 1000);
-        console.log("timoutid: " + timeoutID);
       }
       else {
         ding.play();
         writeTime(seconds);
         if (resting) {
           beginExercise();          
-        } else if (currentExercise < exercises.length) {
-          beginRest();          
         } else {
-          finish();
+          currentExercise = currentExercise + 1;                
+          if (currentExercise < exercises.length) {
+            beginRest();          
+          } else {
+            finish();
+          }
         }    
       }
     }
@@ -207,7 +206,6 @@
       $("#button").text("Start");
       $("#starter").show();
       $("#finished").html("&nbsp;")
-      console.debug("done");
     }
     function writeTime(seconds) {
       // var minutes = Math.floor(seconds / 60);
