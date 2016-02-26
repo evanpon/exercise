@@ -70,10 +70,15 @@
     var timeoutID = -1;
     var tick = new Audio('tick.wav');
     var ding = new Audio('ding.mp3');
+    var completionSounds = [new Audio('reitanna.wav'), new Audio('robotsoundfactory.wav'), new Audio('zagi2.wav')];
     
     function randomize(array) {
       for(var j, x, i = array.length; i; j = parseInt(Math.random() * i), x = array[--i], array[i] = array[j], array[j] = x);
       return array;
+    }
+  
+    function randomElement(array) {
+      return array[Math.floor(Math.random() * array.length)];
     }
   
     function start() {
@@ -83,7 +88,7 @@
       resting = true;
       $("#button").text("Pause");
       beginExercise();
-      speak("Start with jumping jacks");      
+      speak("Start with jumping jacks");
     }
     
     function pause() {
@@ -186,13 +191,14 @@
         timeoutID = window.setTimeout(countdown, 1000);
       }
       else {
-        ding.play();
         writeTime(seconds);
         if (resting) {
+          ding.play();
           beginExercise();          
         } else {
           currentExercise = currentExercise + 1;                
           if (currentExercise < exercises.length) {
+            ding.play();
             beginRest();          
           } else {
             finish();
@@ -200,7 +206,9 @@
         }    
       }
     }
+    
     function finish() {
+      randomElement(completionSounds).play();
       currentExercise = -1;
       $(".exercise").hide();
       $("#button").text("Start");
