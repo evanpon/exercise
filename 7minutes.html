@@ -62,8 +62,8 @@
     <script type="text/javascript">
     var restPeriod = 10;
     var exercisePeriod = 30;
-    var exercises = ["plank", "pushups", "wall_sit", "squats", "lunge", "crunches", "chair_ups", "dips", "rotation_pushups", "high_knees", "side_plank"]
-
+    var baseExercises = ["plank", "pushups", "wall_sit", "squats", "lunge", "crunches", "chair_ups", "dips", "rotation_pushups", "high_knees", "side_plank"]
+    var exercises = [];
     var currentExercise = -1;
     var seconds;
     var resting = false;
@@ -82,7 +82,7 @@
     }
   
     function start() {
-      exercises = randomize(exercises);
+      exercises = randomize(baseExercises);
       exercises.unshift("jumping_jacks");
       currentExercise = 0;
       resting = true;
