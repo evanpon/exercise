@@ -85,10 +85,10 @@
       exercises = randomize(baseExercises);
       exercises.unshift("jumping_jacks");
       currentExercise = 0;
-      resting = true;
+      resting = false;
       $("#button").text("Pause");
-      beginExercise();
-      speak("Start with jumping jacks");
+      beginRest();
+      // speak("Start with jumping jacks");
     }
     
     function pause() {
@@ -149,8 +149,10 @@
     }
     
     function beginRest() {
-      var element = "<img class=\"thumbnail\" src=\"" + exercises[currentExercise - 1] + ".jpg\"  />"
-      $("#finished").append(element);
+      if (currentExercise > 0) {
+        var element = "<img class=\"thumbnail\" src=\"" + exercises[currentExercise - 1] + ".jpg\"  />"
+        $("#finished").append(element);        
+      }
       var nextExercise = exercises[currentExercise];
       var nextExercisePretty = $("#" + nextExercise + " .label").html();
       $('#preview').html("(" + nextExercisePretty + ")")
