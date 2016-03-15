@@ -60,9 +60,10 @@
     }
     </style>
     <script type="text/javascript">
-    var restPeriod = 10;
-    var exercisePeriod = 30;
+    var restPeriod = 2;
+    var exercisePeriod = 3;
     var baseExercises = ["plank", "pushups", "wall_sit", "squats", "lunge", "crunches", "chair_ups", "dips", "rotation_pushups", "high_knees", "side_plank"]
+    var baseExercises = ["plank", "pushups"]
     var exercises = [];
     var currentExercise = -1;
     var seconds;
@@ -82,13 +83,11 @@
     }
   
     function start() {
-      exercises = randomize(baseExercises);
-      exercises.unshift("jumping_jacks");
+      exercises = ["jumping_jacks"].concat(randomize(baseExercises))
       currentExercise = 0;
       resting = false;
       $("#button").text("Pause");
       beginRest();
-      // speak("Start with jumping jacks");
     }
     
     function pause() {
